@@ -10,5 +10,8 @@
         <platform>all</platform>
         <license>MIT</license>
         <source>https://github.com/mikesilvo164/script.module.simpleeval</source>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
     </extension>
 </addon>
