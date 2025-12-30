@@ -244,7 +244,7 @@ DEFAULT_OPERATORS = {ast.Add: safe_add, ast.Sub: op.sub, ast.Mult: safe_mult,
 
 DEFAULT_FUNCTIONS = {"rand": random, "randint": random_int,
                      "int": int, "float": float,
-                     "str": str if PYTHON3 else unicode}
+                     "str": str}
 
 DEFAULT_NAMES = {"True": True, "False": False, "None": None}
 
@@ -280,8 +280,6 @@ class SimpleEval(object):  # pylint: disable=too-few-public-methods
         self.names = names
 
         self.nodes = {
-            ast.Num: self._eval_num,
-            ast.Str: self._eval_str,
             ast.Name: self._eval_name,
             ast.UnaryOp: self._eval_unaryop,
             ast.BinOp: self._eval_binop,
@@ -296,9 +294,15 @@ class SimpleEval(object):  # pylint: disable=too-few-public-methods
             ast.Slice: self._eval_slice,
         }
 
+        # Python 3.14 compatibility - Num/Str removed, use Constant
+        if hasattr(ast, 'Num'):
+            self.nodes[ast.Constant] = self._eval_num
+        if hasattr(ast, 'Str'):
+            self.nodes[ast.Constant] = self._eval_str
+
         # py3k stuff:
         if hasattr(ast, 'NameConstant'):
-            self.nodes[ast.NameConstant] = self._eval_constant
+            self.nodes[ast.Constant] = self._eval_constant
 
         # py3.6, f-strings
         if hasattr(ast, 'JoinedStr'):
